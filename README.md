@@ -1,1 +1,1 @@
-Run locally then deploy with Docker/Render. Set MATHAID_JWT_SECRET in production.
+Run Locally Make sure to install all the Requirements
