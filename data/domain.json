@@ -1,0 +1,181 @@
+{
+  "linear-equations": [
+    {
+      "id": "le1",
+      "q": "Solve: 2x + 5 = 17",
+      "a": "6",
+      "choices": [
+        "4",
+        "6",
+        "8",
+        "10"
+      ],
+      "hint": "Subtract 5, divide by 2.",
+      "difficulty": 1
+    },
+    {
+      "id": "le2",
+      "q": "Solve: 3x - 7 = 11",
+      "a": "6",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "hint": "Add 7, divide by 3.",
+      "difficulty": 1
+    },
+    {
+      "id": "le3",
+      "q": "Solve: 5(x-2)=3x+6",
+      "a": "8",
+      "choices": [
+        "6",
+        "8",
+        "10",
+        "12"
+      ],
+      "hint": "Distribute 5, collect x.",
+      "difficulty": 2
+    }
+  ],
+  "quadratic-equations": [
+    {
+      "id": "qe1",
+      "q": "Solve: x^2 - 9 = 0 (positive root)",
+      "a": "3",
+      "choices": [
+        "-3",
+        "0",
+        "3",
+        "9"
+      ],
+      "hint": "Square roots.",
+      "difficulty": 1
+    },
+    {
+      "id": "qe2",
+      "q": "Solve: x^2 + 6x + 9 = 0 (root)",
+      "a": "-3",
+      "choices": [
+        "-9",
+        "-6",
+        "-3",
+        "3"
+      ],
+      "hint": "(x+3)^2.",
+      "difficulty": 1
+    },
+    {
+      "id": "qe3",
+      "q": "Solve: x^2 - 5x + 6 = 0 (larger root)",
+      "a": "3",
+      "choices": [
+        "2",
+        "3",
+        "-2",
+        "-3"
+      ],
+      "hint": "Factor (x-2)(x-3).",
+      "difficulty": 2
+    }
+  ],
+  "geometry-trigonometry": [
+    {
+      "id": "gt1",
+      "q": "sin(30\u00b0) = ?",
+      "a": "0.5",
+      "choices": [
+        "0.5",
+        "1",
+        "0",
+        "\u221a3/2"
+      ],
+      "hint": "30-60-90 triangle.",
+      "difficulty": 1
+    },
+    {
+      "id": "gt2",
+      "q": "Right triangle legs 3,4 \u2192 hypotenuse?",
+      "a": "5",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "hint": "Pythagoras.",
+      "difficulty": 1
+    },
+    {
+      "id": "gt3",
+      "q": "cos(60\u00b0) = ?",
+      "a": "0.5",
+      "choices": [
+        "0",
+        "0.5",
+        "\u221a3/2",
+        "1"
+      ],
+      "hint": "30-60-90 triangle.",
+      "difficulty": 1
+    }
+  ],
+  "statistics": [
+    {
+      "id": "st1",
+      "q": "Mean of 2,4,6,8",
+      "a": "5",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "hint": "Average: sum\u00f7count.",
+      "difficulty": 1
+    },
+    {
+      "id": "st2",
+      "q": "Median of 1,3,8,9,10",
+      "a": "8",
+      "choices": [
+        "3",
+        "8",
+        "9",
+        "10"
+      ],
+      "hint": "Middle value.",
+      "difficulty": 1
+    }
+  ],
+  "calculus-basics": [
+    {
+      "id": "cb1",
+      "q": "d/dx (x^2) at x=3",
+      "a": "6",
+      "choices": [
+        "3",
+        "6",
+        "9",
+        "12"
+      ],
+      "hint": "Derivative 2x.",
+      "difficulty": 1
+    },
+    {
+      "id": "cb2",
+      "q": "\u222b 2x dx from 0 to 2",
+      "a": "4",
+      "choices": [
+        "2",
+        "4",
+        "6",
+        "8"
+      ],
+      "hint": "x^2 |_0^2.",
+      "difficulty": 2
+    }
+  ]
+}

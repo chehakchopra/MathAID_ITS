@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>MathAid • ITS Enterprise</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #fff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --brand: #2563eb;
+      --ok: #16a34a;
+      --warn: #eab308;
+      --err: #dc2626;
+      --border: #e5e7eb
+    }
+
+    :root.dark {
+      --bg: #0b1220;
+      --card: #0f172a;
+      --ink: #e5e7eb;
+      --muted: #94a3b8;
+      --brand: #60a5fa;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #f87171;
+      --border: #1f2937
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink)
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 20px 60px
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 16px 0
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), #0ea5e9);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700
+    }
+
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--ink)
+    }
+
+    .primary {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand)
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--ink);
+      width: 100%
+    }
+
+    small.muted {
+      color: var(--muted)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .progress {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .bar {
+      height: 100%;
+      background: var(--brand);
+      width: 0%
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: #000;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .2s
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .hidden {
+      display: none
+    }
+
+    .switch {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+  </style>
+</head>
+
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='badge'>🤖</div>
+        <h2>MathAid · ITS</h2>
+      </div>
+      <nav><a data-nav='home'>Home</a><a data-nav='practice'>Practice</a><a data-nav='progress'>Progress</a><a
+          data-nav='teacher' id='teacherTab' class='hidden'>Teacher</a><a data-nav='author' id='authorTab'
+          class='hidden'>Author</a><a data-nav='settings'>Settings</a></nav>
+    </header>
+    <main id='main'>
+      <section id='home' class='card'>
+        <h2>Welcome</h2>
+        <div class='grid cols-3'>
+          <div class='card'>
+            <h3>Login</h3>
+            <div class='grid'>
+              <input id='username' placeholder='username (alex / john / teacher)'><input id='password'
+                placeholder='password (alex123 / john123 / teach123)' type='password'>
+              <button class='btn primary' id='loginBtn'>Login</button><small class='muted'>Use demo accounts or register
+                a new student.</small>
+            </div>
+            <hr>
+            <h4>Register</h4>
+            <div class='grid'><input id='r_username' placeholder='new username'><input id='r_password'
+                placeholder='password' type='password'><button class='btn' id='registerBtn'>Create Student</button>
+            </div>
+          </div>
+          <div class='card'>
+            <h3>Catalog</h3>
+            <ul id='skillList'></ul>
+          </div>
+          <div class='card'>
+            <h3>Tips</h3>
+            <p><b>Any</b> lets tutor pick skills adaptively (prereqs + mastery + accuracy).</p>
+            <p>Teacher tab → class averages + drilldowns.</p>
+          </div>
+        </div>
+      </section>
+      <section id='practice' class='card hidden'>
+        <div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px'>
+          <h2>Practice</h2>
+          <div class='switch'><label class='muted'>Skill:</label><select id='skillPicker'></select><button class='btn'
+              id='anySkill'>Any</button></div>
+        </div>
+        <div class='card' id='qBox'>
+          <div class='muted'>Skill</div>
+          <h3 id='skillName'></h3>
+          <p><strong>Question:</strong> <span id='questionText'></span></p>
+          <div id='choices'></div>
+          <div style='display:flex;gap:10px;margin-top:12px'><button class='btn primary'
+              id='submitBtn'>Submit</button><button class='btn' id='skipBtn'>Skip</button><button class='btn'
+              id='hintBtn'>Hint</button></div>
+          <p id='feedback' class='muted'></p>
+        </div>
+      </section>
+      <section id='progress' class='card hidden'>
+        <h2>Progress</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Mastery</th>
+              <th width='45%'>Progress</th>
+              <th>Accuracy</th>
+              <th>Best Streak</th>
+              <th>Avg Time (ms)</th>
+            </tr>
+          </thead>
+          <tbody id='progressBody'></tbody>
+        </table>
+      </section>
+      <section id='teacher' class='card hidden'>
+        <h2>Teacher Dashboard</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Students</th>
+              <th>Average Mastery</th>
+            </tr>
+          </thead>
+          <tbody id='classBody'></tbody>
+        </table>
+        <h3 style='margin-top:16px'>Student Drilldown</h3>
+        <div class='grid cols-2'>
+          <div class='card'><input id='studentLookup' placeholder='student username (e.g., alex)'><button class='btn'
+              id='viewStudent'>View Progress</button></div>
+          <div class='card'>
+            <table>
+              <thead>
+                <tr>
+                  <th>Skill</th>
+                  <th>Mastery</th>
+                </tr>
+              </thead>
+              <tbody id='studentProg'></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section id='author' class='card hidden'>
+        <h2>Authoring</h2>
+        <div class='grid cols-2'>
+          <div class='card'>
+            <h3>Edit Domain JSON</h3><textarea id='domainJson' rows='18' spellcheck='false'></textarea>
+            <div style='margin-top:10px;display:flex;gap:10px'><button class='btn primary'
+                id='saveDomain'>Save</button><button class='btn' id='reloadDomain'>Reload</button></div>
+            <small class='muted'>JSON structure: { skill: [ {q,a,choices?,hint?,difficulty?} ] }</small>
+          </div>
+          <div class='card'>
+            <h3>Import CSV</h3>
+            <p>Columns: skill,id,q,a,choices (|),hint,difficulty</p>
+            <textarea id='csvText' rows='8'
+              placeholder='skill,id,q,a,choices,hint,difficulty&#10;linear-equations,le4,Solve: x+7=10,3,2|3|4|5,Subtract 7.,1'></textarea>
+            <div style='margin-top:10px'><button class='btn' id='importCsv'>Import</button></div>
+          </div>
+        </div>
+      </section>
+      <section id='settings' class='card hidden'>
+        <h2>Settings</h2>
+        <div class='switch'><button class='btn' id='themeBtn'>Toggle Dark Mode</button><small class='muted'>Theme is
+            saved locally.</small></div>
+      </section>
+    </main>
+    <div class='toast' id='toast'>Saved</div>
+  </div>
+  <script>
+    const API = location.origin; let AUTH = null; let CURRENT_STUDENT = null; let PREFERRED_SKILL = null; let CURRENT_Q = null; let questionStart = null;
+    const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
+    function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 1400); }
+    function show(id) { $$('#main > section').forEach(s => s.classList.toggle('hidden', s.id !== id)); history.replaceState({}, '', '#' + id); }
+    (function () { const dark = localStorage.getItem('mathaid_theme') === 'dark'; document.documentElement.classList.toggle('dark', dark); })();
+    $("#themeBtn")?.addEventListener('click', () => { const d = !document.documentElement.classList.contains('dark'); document.documentElement.classList.toggle('dark', d); localStorage.setItem('mathaid_theme', d ? 'dark' : 'light'); });
+
+    function authHeaders() { return AUTH?.token ? { 'Authorization': 'Bearer ' + AUTH.token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }; }
+    async function getJSON(p) { const r = await fetch(p, { headers: authHeaders() }); if (!r.ok) throw new Error(await r.text()); return r.json(); }
+    async function postJSON(p, b) { const r = await fetch(p, { method: 'POST', headers: authHeaders(), body: (typeof b === 'string' ? b : JSON.stringify(b)) }); if (!r.ok) throw new Error(await r.text()); return r.json(); }
+
+    document.addEventListener('click', (e) => { const a = e.target.closest('[data-nav]'); if (a) { e.preventDefault(); const id = a.getAttribute('data-nav'); show(id); if (id === 'practice') { nextQuestion(); } if (id === 'progress') { loadProgress(); } if (id === 'teacher') { loadClasses(); } if (id === 'author') { loadDomainEditor(); } } });
+
+    $("#loginBtn").addEventListener('click', async () => {
+      const username = $("#username").value.trim().toLowerCase(), password = $("#password").value;
+      try {
+        const res = await postJSON(`${API}/api/auth/login`, { username, password }); AUTH = { ...res.user, token: res.token }; CURRENT_STUDENT = (AUTH.role === 'student') ? username : 'alex';
+        $("#teacherTab").classList.toggle('hidden', AUTH.role !== 'teacher'); $("#authorTab").classList.toggle('hidden', AUTH.role !== 'teacher');
+        toast('Welcome ' + res.user.name); await seedUI(); show('practice');
+      } catch (e) { toast('Login failed'); console.error(e); }
+    });
+    $("#registerBtn").addEventListener('click', async () => {
+      const u = $("#r_username").value.trim().toLowerCase(), p = $("#r_password").value; if (!u || !p) return toast('Enter username & password');
+      try { await postJSON(`${API}/api/auth/register`, { username: u, password: p, role: 'student' }); toast('Account created. Login now.'); } catch (e) { toast('Register failed'); console.error(e); }
+    });
+    async function seedUI() {
+      const d = await getJSON(`${API}/api/domain`); const list = $("#skillList"); list.innerHTML = ''; Object.entries(d).forEach(([s, qs]) => { const li = document.createElement('li'); li.textContent = `${s} — ${qs.length} questions`; list.appendChild(li); });
+      const skills = await getJSON(`${API}/api/skills`); const sel = $("#skillPicker"); sel.innerHTML = ''; skills.skills.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+    }
+    $("#skillPicker").addEventListener('change', () => { PREFERRED_SKILL = $("#skillPicker").value; nextQuestion(); });
+    $("#anySkill").addEventListener('click', () => { PREFERRED_SKILL = null; nextQuestion(); });
+
+    async function nextQuestion() {
+      const url = PREFERRED_SKILL ? `${API}/api/next?student_id=${encodeURIComponent(CURRENT_STUDENT)}&skill=${encodeURIComponent(PREFERRED_SKILL)}` : `${API}/api/next?student_id=${encodeURIComponent(CURRENT_STUDENT)}`;
+      try {
+        const data = await getJSON(url); if (data.done) { $("#questionText").textContent = data.message || 'All done!'; $("#choices").innerHTML = ''; $("#skillName").textContent = ''; return; }
+        CURRENT_Q = data; questionStart = Date.now(); $("#skillName").textContent = data.skill; $("#questionText").textContent = data.question; const c = $("#choices"); c.innerHTML = '';
+        if (data.choices && data.choices.length) { data.choices.forEach(ch => { const id = 'c_' + Math.random().toString(36).slice(2, 7); const row = document.createElement('div'); row.style.margin = '6px 0'; row.innerHTML = `<input type='radio' name='opt' id='${id}' value='${ch}'> <label for='${id}'>${ch}</label>`; c.appendChild(row); }); }
+        else { const row = document.createElement('div'); row.innerHTML = `<input id='freeAns' placeholder='type your answer'>`; c.appendChild(row); }
+        $("#feedback").textContent = '';
+      } catch (e) { console.error(e); toast('Failed to load question'); }
+    }
+    $("#hintBtn").addEventListener('click', () => { if (!CURRENT_Q) return; $("#feedback").textContent = CURRENT_Q.hint || 'Think inverses.'; });
+    $("#skipBtn").addEventListener('click', nextQuestion);
+    $("#submitBtn").addEventListener('click', async () => {
+      if (!CURRENT_Q) return; let ans = null; const chosen = document.querySelector('#choices input[type=radio]:checked'); ans = chosen ? chosen.value : ($("#freeAns")?.value?.trim() || '');
+      try {
+        const correct = String(ans) === String(CURRENT_Q.answer); const elapsed = questionStart ? (Date.now() - questionStart) : 0; const res = await postJSON(`${API}/api/answer`, { student_id: CURRENT_STUDENT, skill: CURRENT_Q.skill, id: CURRENT_Q.id, is_correct: correct, time_ms: elapsed });
+        $("#feedback").innerHTML = correct ? `<span style='color:var(--ok)'>Correct!</span> Mastery → ${res.mastery.toFixed(2)}` : `<span style='color:var(--err)'>Not quite.</span> Correct: <b>${CURRENT_Q.answer}</b>. Mastery → ${res.mastery.toFixed(2)}`;
+        loadProgress(); setTimeout(nextQuestion, 800);
+      } catch (e) { console.error(e); toast('Submit failed'); }
+    });
+
+    async function loadProgress() {
+      try {
+        const st = await getJSON(`${API}/api/student/${encodeURIComponent(CURRENT_STUDENT)}/progress`); const analytics = await getJSON(`${API}/api/analytics/${encodeURIComponent(CURRENT_STUDENT)}`);
+        const tbody = $("#progressBody"); tbody.innerHTML = ''; Object.entries(st.mastery).forEach(([k, v]) => {
+          const s = analytics[k] || {}; const pct = Math.round(v * 100);
+          const tr = document.createElement('tr'); const acc = (s.accuracy != null) ? Math.round(s.accuracy * 100) + '%' : '-';
+          tr.innerHTML = `<td>${k}</td><td>${v.toFixed(2)}</td><td><div class='progress'><div class='bar' style='width:${pct}%'></div></div></td><td>${acc}</td><td>${s.best_streak ?? 0}</td><td>${s.avg_time_ms ?? '-'}</td>`; tbody.appendChild(tr);
+        });
+      } catch (e) { console.error(e); }
+    }
+    async function loadClasses() { try { const c = await getJSON(`${API}/api/classes`); const tbody = $("#classBody"); tbody.innerHTML = ''; Object.entries(c).forEach(([cid, row]) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${row.name}</td><td>${row.students.join(', ')}</td><td>${row.avg_mastery}</td>`; tbody.appendChild(tr); }); } catch (e) { console.error(e); } }
+    $("#viewStudent").addEventListener('click', async () => { const sid = $("#studentLookup").value.trim().toLowerCase(); if (!sid) return; const data = await getJSON(`${API}/api/student/${encodeURIComponent(sid)}/progress`); const tbody = $("#studentProg"); tbody.innerHTML = ''; Object.entries(data.mastery).forEach(([k, v]) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${k}</td><td>${v.toFixed(2)}</td>`; tbody.appendChild(tr); }); });
+
+    async function loadDomainEditor() { try { const d = await getJSON(`${API}/api/domain`); $("#domainJson").value = JSON.stringify(d, null, 2); } catch (e) { console.error(e); } }
+    $("#reloadDomain").addEventListener('click', loadDomainEditor);
+    $("#saveDomain").addEventListener('click', async () => { try { const obj = JSON.parse($("#domainJson").value); await postJSON(`${API}/api/domain`, obj); toast('Domain saved'); await seedUI(); } catch (e) { toast('Invalid JSON or save failed'); console.error(e); } });
+    $("#importCsv").addEventListener('click', async () => { const text = $("#csvText").value; try { await postJSON(`${API}/api/import/csv`, text); toast('Imported'); await seedUI(); } catch (e) { toast('Import failed'); console.error(e); } });
+
+    (async function init() { show(location.hash ? location.hash.replace('#', '') : 'home'); await seedUI(); })();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+{
+  "teacher": {
+    "role": "teacher",
+    "password_hash": "63cb9c6fa2d65784658539a93ad47f2274a02ddff344537beb97bd399938ad22",
+    "name": "Ms. Shampoo",
+    "classes": [
+      "algebra1"
+    ]
+  },
+  "alex": {
+    "role": "student",
+    "password_hash": "d9508122cd143d69df229bf3624b7bcb2b8ac81ed210a0c926455ef119c12abd",
+    "name": "Alex",
+    "classes": [
+      "algebra1"
+    ]
+  },
+  "john": {
+    "role": "student",
+    "password_hash": "b4b597c714a8f49103da4dab0266af0ee0ae4f8575250a84855c3d76941cd422",
+    "name": "John",
+    "classes": [
+      "algebra1"
+    ]
+  },
+  "chehak": {
+    "role": "student",
+    "password_hash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "name": "Chehak",
+    "classes": []
+  }
+}
