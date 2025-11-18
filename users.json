@@ -1,0 +1,12 @@
+{
+  "chehak": {
+    "pw_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "role": "student",
+    "class": "algebra1"
+  },
+  "chehak2": {
+    "pw_hash": "e0bc60c82713f64ef8a57c0c40d02ce24fd0141d5cc3086259c19b1e62a62bea",
+    "role": "student",
+    "class": "algebra1"
+  }
+}
