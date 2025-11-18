@@ -1,0 +1,12 @@
+{
+  "student_id": "cc",
+  "grade": "grade9",
+  "mastery": {
+    "linear-equations": 0.0,
+    "quadratic-equations": 0.0,
+    "polynomials": 0.0,
+    "calculus-basics": 0.0,
+    "geometry-trigonometry": 0.0,
+    "statistics": 0.0
+  }
+}
