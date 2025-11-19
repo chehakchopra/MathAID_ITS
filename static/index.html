@@ -195,6 +195,7 @@
     }
 
     /* ---- Practice enhancements ---- */
+
     #qBox {
       margin-top: 14px;
     }
@@ -306,6 +307,12 @@
             <div class='grid'>
               <input id='r_username' placeholder='new username'>
               <input id='r_password' placeholder='password' type='password'>
+              <select id='r_grade'>
+                <option value='grade9'>Grade 9</option>
+                <option value='grade10'>Grade 10</option>
+                <option value='grade11'>Grade 11</option>
+                <option value='grade12'>Grade 12</option>
+              </select>
               <button class='btn' id='registerBtn'>Create Student</button>
             </div>
           </div>
@@ -324,10 +331,15 @@
       <!-- PRACTICE -->
       <section id='practice' class='card hidden'>
         <div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px'>
-          <h2>Practice</h2>
-          <div class='switch' style="flex-wrap:wrap;">
-            <label class='muted'>Grade:</label>
-            <select id='gradePicker'></select>
+          <div>
+            <h2>Practice</h2>
+            <small class='muted' id='currentGradeLabel'>Grade: -</small>
+          </div>
+          <div class='switch' style='flex-wrap:wrap;justify-content:flex-end'>
+            <label class='muted'>Mode:</label>
+            <button class='btn primary' id='modePracticeBtn'>Practice</button>
+            <button class='btn' id='modeQuizBtn'>Quiz (10 Qs)</button>
+            <span style='width:1px;height:24px;background:var(--border);margin:0 8px'></span>
             <label class='muted'>Skill:</label>
             <select id='skillPicker'></select>
             <button class='btn' id='anySkill'>Any</button>
@@ -338,14 +350,13 @@
             <div>
               <div class='muted'>Skill</div>
               <h3 id='skillName'></h3>
-              <small id="gradeLabel" class="muted"></small>
             </div>
             <div id='difficultyBadge' class='pill'>Difficulty: -</div>
           </div>
           <p><strong>Question:</strong> <span id='questionText'></span></p>
           <div id='choices'></div>
           <div class='grid'
-            style='grid-template-columns:repeat(3,minmax(0,auto));gap:10px;margin-top:12px;align-items:center;max-width:380px'>
+            style='grid-template-columns:repeat(3,minmax(0,auto));gap:10px;margin-top:12px;align-items:center;max-width:420px'>
             <button class='btn primary' id='submitBtn'>Submit</button>
             <button class='btn' id='skipBtn'>Skip</button>
             <button class='btn' id='hintBtn'>Hint</button>
@@ -358,6 +369,7 @@
       <!-- PROGRESS -->
       <section id='progress' class='card hidden'>
         <h2>Progress</h2>
+        <h3>By Skill</h3>
         <table>
           <thead>
             <tr>
@@ -370,6 +382,32 @@
             </tr>
           </thead>
           <tbody id='progressBody'></tbody>
+        </table>
+
+        <h3 style='margin-top:18px'>By Grade</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Grade</th>
+              <th>Mastery</th>
+              <th>Accuracy</th>
+            </tr>
+          </thead>
+          <tbody id='gradeProgressBody'></tbody>
+        </table>
+
+        <h3 style='margin-top:18px'>Review Mistakes</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Grade</th>
+              <th>Question</th>
+              <th>Your Answer</th>
+              <th>Correct Answer</th>
+            </tr>
+          </thead>
+          <tbody id='mistakesBody'></tbody>
         </table>
       </section>
 
@@ -418,14 +456,15 @@
               <button class='btn' id='reloadDomain'>Reload</button>
             </div>
             <small class='muted'>
-              JSON structure (nested grades): { "skill": { "grade9": [ { q, a, choices?, hint?, difficulty?, grade? } ], ... } }
+              JSON structure:
+              { "skill": { "grade9": [ { "id","q","a","choices","hint","difficulty" } ], "grade10": [...] } }
             </small>
           </div>
           <div class='card'>
             <h3>Import CSV</h3>
-            <p>Columns: skill,id,q,a,choices (|),hint,difficulty,grade</p>
+            <p>Columns: grade (optional), skill,id,q,a,choices (|),hint,difficulty</p>
             <textarea id='csvText' rows='8'
-              placeholder='skill,id,q,a,choices,hint,difficulty,grade&#10;linear-equations,le4,Solve: x+7=10,3,2|3|4|5,Subtract 7.,1,grade9'></textarea>
+              placeholder='grade,skill,id,q,a,choices,hint,difficulty&#10;grade9,linear-equations,le4,Solve: x+7=10,3,2|3|4|5,Subtract 7.,1'></textarea>
             <div style='margin-top:10px'>
               <button class='btn' id='importCsv'>Import</button>
             </div>
@@ -436,9 +475,21 @@
       <!-- SETTINGS -->
       <section id='settings' class='card hidden'>
         <h2>Settings</h2>
-        <div class='switch'>
-          <button class='btn' id='themeBtn'>Toggle Dark Mode</button>
-          <small class='muted'>Theme is saved locally.</small>
+        <div class='grid cols-2'>
+          <div class='card'>
+            <h3>Profile</h3>
+            <label class='muted'>Grade</label>
+            <select id='gradeSelect'></select>
+            <button class='btn' id='saveGradeBtn' style='margin-top:8px'>Save Grade</button>
+            <small class='muted'>Grade is used to pick topics and difficulty.</small>
+          </div>
+          <div class='card'>
+            <h3>Appearance</h3>
+            <div class='switch'>
+              <button class='btn' id='themeBtn'>Toggle Dark Mode</button>
+              <small class='muted'>Theme is saved locally.</small>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -447,12 +498,27 @@
 
   <script>
     const API = location.origin;
+    const GRADES = [
+      { id: 'grade9', label: 'Grade 9' },
+      { id: 'grade10', label: 'Grade 10' },
+      { id: 'grade11', label: 'Grade 11' },
+      { id: 'grade12', label: 'Grade 12' },
+    ];
+
     let AUTH = null;
     let CURRENT_STUDENT = null;
-    let PREFERRED_SKILL = null;
     let CURRENT_GRADE = 'grade9';
+    let PREFERRED_SKILL = null;
     let CURRENT_Q = null;
     let questionStart = null;
+    let CURRENT_MODE = 'practice';
+
+    // Quiz state
+    let QUIZ_ACTIVE = false;
+    let QUIZ_TOTAL = 10;
+    let QUIZ_COUNT = 0;
+    let QUIZ_CORRECT = 0;
+    let QUIZ_RESULTS = [];
 
     const $ = s => document.querySelector(s),
       $$ = s => Array.from(document.querySelectorAll(s));
@@ -502,6 +568,52 @@
       return r.json();
     }
 
+    function gradeLabel(id) {
+      const g = GRADES.find(x => x.id === id);
+      return g ? g.label : '-';
+    }
+
+    function initGradeSelect() {
+      const sel = $('#gradeSelect');
+      if (!sel) return;
+      sel.innerHTML = '';
+      GRADES.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g.id;
+        opt.textContent = g.label;
+        sel.appendChild(opt);
+      });
+    }
+
+    function syncGradeUIFromAuth() {
+      if (AUTH && AUTH.grade && GRADES.some(g => g.id === AUTH.grade)) {
+        CURRENT_GRADE = AUTH.grade;
+      }
+      const sel = $('#gradeSelect');
+      if (sel) sel.value = CURRENT_GRADE;
+      const label = $('#currentGradeLabel');
+      if (label) label.textContent = 'Grade: ' + gradeLabel(CURRENT_GRADE);
+    }
+
+    function setMode(mode) {
+      CURRENT_MODE = mode;
+      QUIZ_ACTIVE = (mode === 'quiz');
+      const pBtn = $('#modePracticeBtn');
+      const qBtn = $('#modeQuizBtn');
+      if (pBtn && qBtn) {
+        if (mode === 'practice') {
+          pBtn.classList.add('primary');
+          qBtn.classList.remove('primary');
+        } else {
+          qBtn.classList.add('primary');
+          pBtn.classList.remove('primary');
+          QUIZ_COUNT = 0;
+          QUIZ_CORRECT = 0;
+          QUIZ_RESULTS = [];
+        }
+      }
+    }
+
     document.addEventListener('click', (e) => {
       const a = e.target.closest('[data-nav]');
       if (a) {
@@ -522,8 +634,10 @@
         const res = await postJSON(`${API}/api/auth/login`, { username, password });
         AUTH = { ...res.user, token: res.token };
         CURRENT_STUDENT = (AUTH.role === 'student') ? username : 'alex';
+        CURRENT_GRADE = AUTH.grade || CURRENT_GRADE || 'grade9';
         $("#teacherTab").classList.toggle('hidden', AUTH.role !== 'teacher');
         $("#authorTab").classList.toggle('hidden', AUTH.role !== 'teacher');
+        syncGradeUIFromAuth();
         toast('Welcome ' + res.user.name);
         await seedUI();
         show('practice');
@@ -535,10 +649,11 @@
 
     $("#registerBtn").addEventListener('click', async () => {
       const u = $("#r_username").value.trim().toLowerCase(),
-        p = $("#r_password").value;
+        p = $("#r_password").value,
+        g = $("#r_grade").value;
       if (!u || !p) return toast('Enter username & password');
       try {
-        await postJSON(`${API}/api/auth/register`, { username: u, password: p, role: 'student' });
+        await postJSON(`${API}/api/auth/register`, { username: u, password: p, role: 'student', grade: g });
         toast('Account created. Login now.');
       } catch (e) {
         toast('Register failed');
@@ -546,27 +661,39 @@
       }
     });
 
+    $("#saveGradeBtn").addEventListener('click', async () => {
+      const sel = $("#gradeSelect");
+      if (!sel) return;
+      const g = sel.value;
+      CURRENT_GRADE = g;
+      syncGradeUIFromAuth();
+      if (!AUTH) {
+        toast('Grade set locally. Login to save to profile.');
+        await seedUI();
+        return;
+      }
+      try {
+        const res = await postJSON(`${API}/api/profile/grade`, { grade: g });
+        AUTH.grade = res.grade;
+        await seedUI();
+        toast('Grade updated');
+      } catch (e) {
+        console.error(e);
+        toast('Failed to update grade');
+      }
+    });
+
     async function seedUI() {
-      // Catalog + counts across grades
       const d = await getJSON(`${API}/api/domain`);
       const list = $("#skillList");
       list.innerHTML = '';
-      Object.entries(d).forEach(([skill, buckets]) => {
-        let count = 0;
-        if (Array.isArray(buckets)) {
-          count = buckets.length;
-        } else if (buckets && typeof buckets === 'object') {
-          Object.values(buckets).forEach(arr => {
-            if (Array.isArray(arr)) count += arr.length;
-          });
-        }
+      Object.entries(d).forEach(([skill, perGrade]) => {
+        const bucket = perGrade[CURRENT_GRADE] || [];
         const li = document.createElement('li');
-        li.textContent = `${skill} — ${count} questions`;
+        li.textContent = `${skill} — ${bucket.length} questions (${gradeLabel(CURRENT_GRADE)})`;
         list.appendChild(li);
       });
-
-      // Skills dropdown
-      const skills = await getJSON(`${API}/api/skills`);
+      const skills = await getJSON(`${API}/api/skills?grade=${encodeURIComponent(CURRENT_GRADE)}`);
       const sel = $("#skillPicker");
       sel.innerHTML = '';
       skills.skills.forEach(s => {
@@ -575,22 +702,6 @@
         o.textContent = s;
         sel.appendChild(o);
       });
-
-      // Grades dropdown
-      const gradesRes = await getJSON(`${API}/api/grades`);
-      const gradeSel = $("#gradePicker");
-      gradeSel.innerHTML = '';
-      gradesRes.grades.forEach(g => {
-        const label = g.startsWith('grade') ? `Grade ${g.slice(5)}` : g;
-        const o = document.createElement('option');
-        o.value = g;
-        o.textContent = label;
-        gradeSel.appendChild(o);
-      });
-      if (gradesRes.grades.length && !gradesRes.grades.includes(CURRENT_GRADE)) {
-        CURRENT_GRADE = gradesRes.grades[0];
-      }
-      gradeSel.value = CURRENT_GRADE;
     }
 
     $("#skillPicker").addEventListener('change', () => {
@@ -598,15 +709,18 @@
       nextQuestion();
     });
 
-    $("#gradePicker").addEventListener('change', () => {
-      CURRENT_GRADE = $("#gradePicker").value || 'grade9';
-      const label = CURRENT_GRADE.startsWith('grade') ? `Grade ${CURRENT_GRADE.slice(5)}` : CURRENT_GRADE;
-      $("#gradeLabel").textContent = label;
+    $("#anySkill").addEventListener('click', () => {
+      PREFERRED_SKILL = null;
       nextQuestion();
     });
 
-    $("#anySkill").addEventListener('click', () => {
-      PREFERRED_SKILL = null;
+    $("#modePracticeBtn").addEventListener('click', () => {
+      setMode('practice');
+      nextQuestion();
+    });
+
+    $("#modeQuizBtn").addEventListener('click', () => {
+      setMode('quiz');
       nextQuestion();
     });
 
@@ -633,13 +747,55 @@
       badge.className = cls;
     }
 
+    function renderQuizSummary() {
+      const skillName = $('#skillName');
+      const badge = $('#difficultyBadge');
+      const qText = $('#questionText');
+      const choices = $('#choices');
+      const hintText = $('#hintText');
+      const feedback = $('#feedback');
+
+      if (skillName) skillName.textContent = 'Quiz Summary';
+      if (badge) {
+        badge.textContent = '';
+        badge.className = 'pill';
+      }
+      if (qText) {
+        qText.textContent = `You scored ${QUIZ_CORRECT} / ${QUIZ_TOTAL}.`;
+      }
+      if (choices) {
+        choices.innerHTML = '';
+        const list = document.createElement('ul');
+        list.style.paddingLeft = '18px';
+        QUIZ_RESULTS.forEach((r, idx) => {
+          const li = document.createElement('li');
+          const status = r.correct ? '✅' : '❌';
+          li.innerHTML = `${status} <b>${r.skill}</b> (${gradeLabel(r.grade)}): ${r.question}<br>
+            <span class='muted'>Your answer: ${r.student_answer ?? '-'} · Correct: ${r.correct_answer}</span>`;
+          list.appendChild(li);
+        });
+        choices.appendChild(list);
+      }
+      if (hintText) hintText.textContent = 'You can switch back to Practice mode or start another quiz.';
+      if (feedback) feedback.textContent = '';
+    }
+
     async function nextQuestion() {
+      if (!CURRENT_STUDENT) {
+        CURRENT_STUDENT = 'alex';
+      }
+
+      if (QUIZ_ACTIVE && QUIZ_COUNT >= QUIZ_TOTAL) {
+        renderQuizSummary();
+        return;
+      }
+
       const sid = encodeURIComponent(CURRENT_STUDENT ?? 'alex');
-      const gradeParam = encodeURIComponent(CURRENT_GRADE ?? 'grade9');
-      const base = `${API}/api/next?student_id=${sid}&grade=${gradeParam}`;
-      const url = PREFERRED_SKILL
-        ? `${base}&skill=${encodeURIComponent(PREFERRED_SKILL)}`
-        : base;
+      const grade = encodeURIComponent(CURRENT_GRADE || 'grade9');
+      const mode = encodeURIComponent(CURRENT_MODE || 'practice');
+      let url = `${API}/api/next?student_id=${sid}&grade=${grade}&mode=${mode}`;
+      if (PREFERRED_SKILL) url += `&skill=${encodeURIComponent(PREFERRED_SKILL)}`;
+
       try {
         const data = await getJSON(url);
         if (data.done) {
@@ -649,7 +805,6 @@
           applyDifficultyBadge(null);
           $("#hintText").textContent = '';
           $("#feedback").textContent = '';
-          $("#gradeLabel").textContent = '';
           return;
         }
         CURRENT_Q = data;
@@ -658,28 +813,21 @@
         $("#questionText").textContent = data.question;
         applyDifficultyBadge(data.difficulty ?? null);
 
-        const gLabel = data.grade && data.grade.startsWith('grade')
-          ? `Grade ${data.grade.slice(5)}`
-          : (data.grade || '');
-        $("#gradeLabel").textContent = gLabel;
-
         const c = $("#choices");
         c.innerHTML = '';
         $("#hintText").textContent = '';
         $("#feedback").textContent = '';
 
-        // MCQ-only mode — always use choices list from backend
-        let choices = data.choices || [];
-        if (!choices.length) {
-          // fallback numeric generation
-          const correctNum = Number(data.answer);
+        let choices = data.choices;
+        if (!choices || !choices.length) {
+          const correct = Number(data.answer);
           const wrong = new Set();
           while (wrong.size < 3) {
-            const delta = Math.floor(Math.random() * 9) - 4; // -4..+4
-            const candidate = correctNum + delta;
-            if (candidate !== correctNum) wrong.add(String(candidate));
+            const delta = Math.floor(Math.random() * 9) - 4;
+            const candidate = correct + delta;
+            if (candidate !== correct) wrong.add(String(candidate));
           }
-          choices = [...wrong, String(correctNum)].sort(() => Math.random() - 0.5);
+          choices = [...wrong, String(correct)].sort(() => Math.random() - 0.5);
         }
 
         choices.forEach(ch => {
@@ -726,19 +874,36 @@
       try {
         const correct = String(ans) === String(CURRENT_Q.answer);
         const elapsed = questionStart ? (Date.now() - questionStart) : 0;
+
+        if (QUIZ_ACTIVE && CURRENT_MODE === 'quiz') {
+          QUIZ_COUNT += 1;
+          if (correct) QUIZ_CORRECT += 1;
+          QUIZ_RESULTS.push({
+            skill: CURRENT_Q.skill,
+            grade: CURRENT_Q.grade,
+            question: CURRENT_Q.question,
+            student_answer: ans,
+            correct_answer: CURRENT_Q.answer,
+            correct
+          });
+        }
+
         const res = await postJSON(`${API}/api/answer`, {
           student_id: CURRENT_STUDENT,
           skill: CURRENT_Q.skill,
           id: CURRENT_Q.id,
           is_correct: correct,
           time_ms: elapsed,
-          grade: CURRENT_Q.grade
+          student_answer: ans,
+          mode: CURRENT_MODE
         });
+
         $("#feedback").innerHTML = correct
           ? `<span style='color:var(--ok)'>Correct!</span> Mastery → ${res.mastery.toFixed(2)}`
           : `<span style='color:var(--err)'>Not quite.</span> Correct: <b>${CURRENT_Q.answer}</b>. Mastery → ${res.mastery.toFixed(2)}`;
+
         loadProgress();
-        setTimeout(nextQuestion, 800);
+        setTimeout(nextQuestion, QUIZ_ACTIVE ? 400 : 800);
       } catch (e) {
         console.error(e);
         toast('Submit failed');
@@ -747,8 +912,15 @@
 
     async function loadProgress() {
       try {
-        const st = await getJSON(`${API}/api/student/${encodeURIComponent(CURRENT_STUDENT)}/progress`);
-        const analytics = await getJSON(`${API}/api/analytics/${encodeURIComponent(CURRENT_STUDENT)}`);
+        const sid = encodeURIComponent(CURRENT_STUDENT ?? 'alex');
+        const [st, analytics, byGrade, mistakes] = await Promise.all([
+          getJSON(`${API}/api/student/${sid}/progress`),
+          getJSON(`${API}/api/analytics/${sid}`),
+          getJSON(`${API}/api/progress_by_grade/${sid}`),
+          getJSON(`${API}/api/mistakes/${sid}?limit=30`)
+        ]);
+
+        // By skill
         const tbody = $("#progressBody");
         tbody.innerHTML = '';
         Object.entries(st.mastery).forEach(([k, v]) => {
@@ -759,17 +931,45 @@
           tr.innerHTML = `
             <td>${k}</td>
             <td>${v.toFixed(2)}</td>
-            <td>
-              <div class='progress'>
-                <div class='bar' style='width:${pct}%'></div>
-              </div>
-            </td>
+            <td><div class='progress'><div class='bar' style='width:${pct}%'></div></div></td>
             <td>${acc}</td>
             <td>${s.best_streak ?? 0}</td>
             <td>${s.avg_time_ms ?? '-'}</td>
           `;
           tbody.appendChild(tr);
         });
+
+        // By grade
+        const gBody = $('#gradeProgressBody');
+        if (gBody) {
+          gBody.innerHTML = '';
+          Object.entries(byGrade).forEach(([gid, row]) => {
+            const tr = document.createElement('tr');
+            const label = gradeLabel(gid);
+            const acc = row.accuracy != null ? Math.round(row.accuracy * 100) + '%' : '-';
+            tr.innerHTML = `<td>${label}</td><td>${row.mastery.toFixed(2)}</td><td>${acc}</td>`;
+            gBody.appendChild(tr);
+          });
+        }
+
+        // Mistakes
+        const mBody = $('#mistakesBody');
+        if (mBody) {
+          mBody.innerHTML = '';
+          mistakes.forEach(m => {
+            const tr = document.createElement('tr');
+            const gradeText = m.grade ? gradeLabel(m.grade) : '-';
+            const qShort = m.question.length > 80 ? m.question.slice(0, 77) + '...' : m.question;
+            tr.innerHTML = `
+              <td>${m.skill}</td>
+              <td>${gradeText}</td>
+              <td>${qShort}</td>
+              <td>${m.student_answer ?? '-'}</td>
+              <td>${m.correct_answer}</td>
+            `;
+            mBody.appendChild(tr);
+          });
+        }
       } catch (e) {
         console.error(e);
       }
@@ -839,8 +1039,14 @@
     });
 
     (async function init() {
+      initGradeSelect();
+      syncGradeUIFromAuth();
       show(location.hash ? location.hash.replace('#', '') : 'home');
-      await seedUI();
+      try {
+        await seedUI();
+      } catch (e) {
+        console.error(e);
+      }
     })();
   </script>
 </body>

@@ -12,9 +12,6 @@ def generate_hint(question_text, answer):
 
     q = question_text.lower()
 
-    # --------------------------
-    # LINEAR EQUATIONS: ax + b = c
-    # --------------------------
     if "solve" in q and "x" in q and ("x^2" not in q and "x²" not in q):
         # Try to parse a pattern like: 3x+4=19
         cleaned = q.replace(" ", "")
@@ -29,37 +26,23 @@ def generate_hint(question_text, answer):
             )
         return "Isolate x: move constants to the other side, then divide by the coefficient of x."
 
-    # --------------------------
-    # QUADRATICS
-    # --------------------------
     if "x^2" in q or "x²" in q:
         if "solve" in q:
             return "Try to factor the quadratic into (x - r1)(x - r2) = 0, then set each bracket to zero."
         return "Look for a common pattern like (x + a)(x + b) that multiplies to the constant term."
 
-    # --------------------------
-    # POLYNOMIAL ROOTS
-    # --------------------------
     if "root" in q or "roots" in q or "polynomial" in q:
         return "Try small integer values (−3, −2, −1, 0, 1, 2, 3, …) to see which make the polynomial equal to 0."
 
-    # --------------------------
-    # CALCULUS – DIFFERENTIATION
-    # --------------------------
     if "d/dx" in q or "differentiate" in q or "derivative" in q:
         return "Use the power rule: d/dx (axⁿ) = a·n·xⁿ⁻¹. Differentiate each term separately."
 
-    # --------------------------
-    # CALCULUS – INTEGRATION
-    # --------------------------
     if "∫" in q or "integral" in q or "integrate" in q:
         if "from" in q or "limits" in q:
             return "First find the antiderivative, then plug in the upper limit minus the lower limit."
         return "Find the antiderivative: for xⁿ, add 1 to the power and divide by the new power."
 
-    # --------------------------
-    # GEOMETRY
-    # --------------------------
+
     if "area" in q and "rectangle" in q:
         return "Area of a rectangle = length × width."
 
@@ -69,16 +52,11 @@ def generate_hint(question_text, answer):
     if "hypotenuse" in q or "right triangle" in q or "pythagoras" in q:
         return "Use Pythagoras: c² = a² + b², so c = √(a² + b²)."
 
-    # --------------------------
-    # PROBABILITY / STATISTICS
-    # --------------------------
     if "mean" in q or "average" in q:
         return "Add all the values together and divide by how many values there are."
 
     if "probability" in q or "chance" in q:
         return "Probability = number of favourable outcomes ÷ total number of possible outcomes."
 
-    # --------------------------
-    # GENERIC FALLBACK
-    # --------------------------
+    # Default generic hint
     return "Identify what is given, what you must find, and try to write an equation that connects them."
